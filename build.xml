@@ -1,0 +1,56 @@
+<project name="valveLemonLDAPNG" default="package.jar"> 
+
+
+	<property file="${basedir}/build.properties"/>
+
+	<property name="app.label" value="${ant.project.name}"/>
+	<property name="app.jar" value="${app.label}.jar" />
+
+	<property name="tomcat.bin" value="${tomcat.home}/bin" />
+	<property name="tomcat.lib.server" value="${tomcat.home}/server/lib" />
+	<property name="tomcat.lib.common" value="${tomcat.home}/common/lib" />
+	
+
+	<path id="classpath.compilation" >
+		<fileset dir="${tomcat.bin}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${tomcat.lib.server}">
+					<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${tomcat.lib.common}">
+					<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="build" depends="init">
+		<javac classpathref="classpath.compilation" 
+			   srcdir="${basedir}/src"
+               destdir="${basedir}/build" debug="on"
+				source="1.5"
+				target="1.5"
+		/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${basedir}/build"/>
+		<mkdir dir="${basedir}/dist"/>
+	</target>
+
+	<target name="package.jar" depends="build">
+			<delete dir="${basedir}/dist"/>
+			<mkdir dir="${basedir}/dist" />
+	     	<jar destfile="${basedir}/dist/${app.jar}" 
+    	     basedir="${basedir}/build"  />
+	</target>
+
+
+
+	<target name="clean">
+		<delete dir="${basedir}/build"/>
+		<delete dir="${basedir}/dist"/>
+	</target>
+
+
+
+</project>
