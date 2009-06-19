@@ -8,7 +8,7 @@ COMPILATION
 
 Required : 
 	* ant
-	* jre > 1.4 
+	* jre > 1.6
 	* tomcat >= 5.5
 
 Configure your tomcat home in build.properties files (be crareful for windosw user ...
@@ -28,7 +28,7 @@ Copy ValveLemonLDAPNG.jar on <TOMCAT_HOME>/server/lib
 
 Add on your server.xml file a new valve entry like this (in host section) :
 
-<Valve className="org.lemonLDAPNG.SSOValve" userKey="AUTH-USER" roleKey="AUTH-ROLE" roleSeparator="," allows="127.0.0.1"/>
+<Valve className="org.lemonLDAPNG.SSOValve" userKey="AUTH-USER" roleKey="AUTH-ROLE" roleSeparator="," allows="127.0.0.1" passThrough="true"/>
 
 Configure attributes.
 
@@ -42,7 +42,9 @@ roleKey :  Key in the http header  send by lemonLDAP in order to store roles.  I
 *allows: 	You can filter remote IP, IP defined in this attributes are allows (use "," separator for multiple IP). 
 				Just set the lemonLDAP on this attribute in order to add more security. If this attribute is missed
 				all hosts are allowed	
-	
+
+*passThrough	Allow anonymous access or not. When it takes "false", HTTP headers have to be send by LemonLDAP to make authentication.
+		So, if the user is not recognized or HTTP headers not present, a 403 error is send.
 
 (*) Optional attributes 
 	

@@ -1,6 +1,8 @@
 package org.lemonLDAPNG;
 
 import java.io.IOException;
+import java.lang.Boolean;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -44,7 +46,8 @@ public class SSOValve extends ValveBase {
 	
 	// By default allow all hosts
 	private Pattern allows[] = {Pattern.compile("^.*$")};
-	
+
+	private boolean passThrough = false;
 
 	public String getInfo() {
 		return info;
@@ -62,7 +65,7 @@ public class SSOValve extends ValveBase {
 				log.debug("Pattern "+allows[j].pattern()+" tested on  ip remote "+remoteAdress);
 			if (allows[j].matcher(remoteAdress).matches()) {
 
-				List roles = new ArrayList();
+				List<String> roles = new ArrayList<String>();
 				// retrieve user and role
 				String user = httpServletRequest.getHeader(userKey);
 				String role = httpServletRequest.getHeader(roleKey);
@@ -89,14 +92,19 @@ public class SSOValve extends ValveBase {
 				if (user != null) {
 					request.setUserPrincipal(new GenericPrincipal(this
 							.getContainer().getRealm(), user, "", roles));
+				} else if (!passThrough) {
+					if (log.isDebugEnabled())
+						log.debug("PassThrough disable, send 403 error");
+					response.sendError(403);
+					return;
 				}
 				getNext().invoke(request, response);
 				return;
 			}
 		}
 		// error 403 => host not autorized
-		  if (flagAllows) response.sendError(403);
-          return;
+		if (flagAllows) response.sendError(403);
+		return;
 	}
 
 	/**
@@ -111,7 +119,7 @@ public class SSOValve extends ValveBase {
 		if (list.length() < 1)
 			return new Pattern[0];
 		list = list + ",";
-		ArrayList reList = new ArrayList();
+		ArrayList<Pattern> reList = new ArrayList<Pattern>();
 		do {
 			if (list.length() <= 0)
 				break;
@@ -171,6 +179,16 @@ public class SSOValve extends ValveBase {
 		// override default allows
 		this.allows = precalculate(allows);
 		flagAllows = true;
+	}
+
+	public String getPassThrough() {
+		return String.valueOf(passThrough);
+	}
+
+	public void setPassThrough(String passThrough) {
+		this.passThrough = Boolean.valueOf(passThrough);
+		if (log.isDebugEnabled() && passThrough != null)
+			log.debug("PassThrough [" + this.passThrough + "]");
 	}
 
 }
