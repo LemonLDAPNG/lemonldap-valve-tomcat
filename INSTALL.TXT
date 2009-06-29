@@ -3,81 +3,63 @@ This valve is only available for tomcat 5.5 or greater
 An up2date documentation can be found here:
 http://wiki.lemonldap.objectweb.org/xwiki/bin/view/NG/DocAppTomcatValve
 
+
 COMPILATION
 =====================================
 
-Required : 
+Required: 
 	* ant
 	* jre > 1.6
 	* tomcat >= 5.5
 
-Configure your tomcat home in build.properties files (be crareful for windosw user ...
- path must contains "/" . exemple c:/my hardisk/tomcat/
+Configure your tomcat home in build.properties file (be careful of path for windows user)
 
+Path must contains "/". For example:
+	c:/my hardisk/tomcat/
 
-run ant command.
+Run ant command:
+	$ ant 
 
-ValveLemonLDAPNG.jar is created under /dist directory
+ValveLemonLDAPNG.jar is created under /dist directory.
 
 
 INSTALLATION
 ======================================
 
+Copy ValveLemonLDAPNG.jar in <TOMCAT_HOME>/server/lib
 
-Copy ValveLemonLDAPNG.jar on <TOMCAT_HOME>/server/lib
-
-Add on your server.xml file a new valve entry like this (in host section) :
+Add on your server.xml file a new valve entry like this (in host section):
 
 <Valve className="org.lemonLDAPNG.SSOValve" userKey="AUTH-USER" roleKey="AUTH-ROLE" roleSeparator="," allows="127.0.0.1" passThrough="true"/>
 
-Configure attributes.
+Configure attributes :
+- userKey: Key in the HTTP header sent by LemonLDAP::NG containing user login
+- roleKey: Key in the HTTP header sent by LemonLDAP::NG containing roles. If LemonLDAP send some roles split by some commas, use roleSeparator
+* roleSeparator: See above
+* allows: You can filter remote IP. IP defined in this attribute are allowed (use "," separator for multiple IP).  Just set the LemonLDAP::NG server IP in this attribute in order to add more security. If this attribute is missed, all hosts are allowed.
+* passThrough: Allow anonymous access or not. When it takes "false", HTTP headers have to be sent by LemonLDAP::NG to make authentication and if the user is not recognized or HTTP headers not present, a 403 error is send. If "true", HTTP requests without headers will pass trough the valve (use with caution).
 
-userKey : Key in the http header  send by lemonLDAP in order to store user login
-
-roleKey :  Key in the http header  send by lemonLDAP in order to store roles.  If lemonLDAP send some roles split by some commas, use
-				roleSeparator
-				
-*roleSeparator : see above
-
-*allows: 	You can filter remote IP, IP defined in this attributes are allows (use "," separator for multiple IP). 
-				Just set the lemonLDAP on this attribute in order to add more security. If this attribute is missed
-				all hosts are allowed	
-
-*passThrough	Allow anonymous access or not. When it takes "false", HTTP headers have to be send by LemonLDAP to make authentication.
-		So, if the user is not recognized or HTTP headers not present, a 403 error is send.
-
+(-) Required attributes
 (*) Optional attributes 
+
 	
 QUICK TEST AN DEBUGGING TIPS
 =======================================
 
-
-Download for exemple probe application (great administration tool for tomcat) http://www.lambdaprobe.org
+Download for example probe application (great administration tool for tomcat) at http://www.lambdaprobe.org
 
 Install valve and configure it.
 
-Send via lemonLDAP user with role = probeuser ... or other user with role = manager
+Send via LemonLDAP::NG a user with the role "probeuser" or "manager"
 
+Probe doesn't ask authentification, you're logged.
 
-Probe doesn't ask authentification, you're logged...
-
-
-
-For debugging, this valve can print some helpfull information in debug level. Configure logging in tomcat
-(see tomcat.apache.org/tomcat-5.5-doc/logging.html ) 
-
+For debugging, this valve can print some helpfull information in debug level. Configure logging in tomcat (see tomcat.apache.org/tomcat-5.5-doc/logging.html)
 
 
 CONTACT
 =======================================
 
-
 	swapon666 (at) users.sourceforge.net
 
-
-
-
-
-
-
-
+	http://lemonldap.ow2.org
